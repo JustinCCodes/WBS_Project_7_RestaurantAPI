@@ -106,3 +106,8 @@ appsettings.Secrets.json
 *.project.json
 *.jfm
 *.launchSettings.json
+
+# SQLite
+*.db
+*.db-shm
+*.db-wal
