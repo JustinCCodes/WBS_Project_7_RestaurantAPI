@@ -6,8 +6,8 @@ public static class DbSeeder
     public static async Task SeedAsync(WebApplication app)
     {
         // Creates scope to get AppDbContext instance
-        using var scope = app.Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        using var scope = app.Services.CreateScope(); // Creates a new scope for dependency injection
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>(); // Gets the AppDbContext from the service provider
 
         // Applies any pending migrations
         await context.Database.MigrateAsync();
@@ -15,6 +15,7 @@ public static class DbSeeder
         // Checks if database is already seeded
         if (await context.MenuItems.AnyAsync())
         {
+            // Database already has data no need to seed
             return;
         }
 
@@ -33,7 +34,10 @@ public static class DbSeeder
             new() { Name = "Tiramisu", Price = 6.50m, Category = "Desserts", Description = "Hausgemachtes italienisches Dessert." }
         };
 
+        // Adds items to database
         context.MenuItems.AddRange(items);
+
+        // Saves changes to database
         await context.SaveChangesAsync();
     }
 }
