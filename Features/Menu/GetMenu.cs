@@ -1,5 +1,6 @@
 namespace Restaurant.Api.Features.Menu;
 
+// Getting menu items with optional filters
 public static class GetMenu
 {
     // Handler to get menu items with optional filters
@@ -13,8 +14,12 @@ public static class GetMenu
         // Base query
         var query = db.MenuItems.AsNoTracking().AsQueryable();
 
-        // EF.Functions.Like for case insensitive search
-        // cause .ToLower inside query causes client evaluation issues with SQLite
+        // Using EF.Functions.Like with wildcards for case insensitive search in SQLite
+        // as its more reliable than .ToLower() which maybe has Unicode handling issues and prevents index usage
+        // Column Collation would be Enterprise best Practice but for KISS I use LIKE
+        // modelBuilder.Entity<YourEntity>()
+        // .Property(x => x.Name)
+        // .UseCollation("NOCASE");
         if (!string.IsNullOrWhiteSpace(q))
         {
             var pattern = $"%{q}%"; // Wildcard pattern for LIKE
@@ -50,5 +55,17 @@ public static class GetMenu
 
         // Returns list of menu items
         return TypedResults.Ok(items);
+    }
+
+    public static async Task<IResult> GetByIdAsync(int id, AppDbContext db)
+    {
+        // Finds menu item by id
+        var item = await db.MenuItems
+            .AsNoTracking() // Read only query
+            .FirstOrDefaultAsync(x => x.Id == id); // Filters by id
+
+        return item is null
+            ? TypedResults.NotFound()
+            : TypedResults.Ok(item);
     }
 }

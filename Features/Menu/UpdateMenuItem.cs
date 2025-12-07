@@ -1,5 +1,6 @@
 namespace Restaurant.Api.Features.Menu;
 
+// Updating an existing menu item
 public static class UpdateMenuItem
 {
     // DTO for incoming request
@@ -13,9 +14,10 @@ public static class UpdateMenuItem
         {
             RuleFor(x => x.Name).NotEmpty().Length(3, 100); // Name is required and length between 3 and 100
             RuleFor(x => x.Price).GreaterThan(0); // Price must be greater than 0
-            RuleFor(x => x.Category).NotEmpty().Must(c =>
-                new[] { "Burgers", "Salads", "Starters", "Sides", "Drinks", "Pizza", "Desserts" }.Contains(c))
-                .WithMessage("Invalid category."); // Category must be one of predefined values
+            RuleFor(x => x.Category)
+                .NotEmpty() // Category is required
+                .Must(c => MenuItem.AllowedCategories.Contains(c)) // Category must be one of predefined values
+                .WithMessage($"Invalid category. Allowed: {string.Join(", ", MenuItem.AllowedCategories)}"); // Dynamic message with allowed categories
         }
     }
 
