@@ -1,5 +1,6 @@
 namespace Restaurant.Api.Features.Menu;
 
+// Deleting a menu item
 public static class DeleteMenuItem
 {
     // Handler for deleting menu item
